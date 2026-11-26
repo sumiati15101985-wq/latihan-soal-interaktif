@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Kuis Bilangan Bulat – MTs Kelas 7</title>
+<style>
+:root{--bg:#f5f7f4;--card:#fff;--tx:#1d2b24;--mu:#5d6d65;--pr:#0f766e;--prt:#fff;--bd:#d5ddd8;--ok:#15803d;--okb:#dcfce7;--no:#b91c1c;--nob:#fee2e2;--ac:#fef3c7;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#111a16;--card:#1a2620;--tx:#e8f0ec;--mu:#9fb0a7;--pr:#2dd4bf;--prt:#06231f;--bd:#33463d;--ok:#86efac;--okb:#14351f;--no:#fca5a5;--nob:#3b1a1a;--ac:#3a3216;color-scheme:dark}}
+:root[data-theme="dark"]{--bg:#111a16;--card:#1a2620;--tx:#e8f0ec;--mu:#9fb0a7;--pr:#2dd4bf;--prt:#06231f;--bd:#33463d;--ok:#86efac;--okb:#14351f;--no:#fca5a5;--nob:#3b1a1a;--ac:#3a3216;color-scheme:dark}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--tx);font:16px/1.55 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif}
+main{max-width:720px;margin:0 auto;padding:16px}
+h1{font-size:1.25rem;margin:4px 0 2px}
+.sub{color:var(--mu);font-size:.9rem;margin-bottom:12px}
+.bar{height:8px;background:var(--bd);border-radius:9px;overflow:hidden;margin:8px 0 14px}
+.bar i{display:block;height:100%;background:var(--pr);width:0;transition:width .3s}
+.card{background:var(--card);border:1px solid var(--bd);border-radius:14px;padding:18px}
+.meta{display:flex;justify-content:space-between;color:var(--mu);font-size:.85rem;margin-bottom:8px}
+.tag{background:var(--ac);padding:1px 8px;border-radius:9px}
+.q{font-size:1.05rem;font-weight:600;margin:0 0 14px}
+button{font:inherit;color:inherit;cursor:pointer}
+.opt{display:block;width:100%;text-align:left;background:var(--card);border:2px solid var(--bd);border-radius:10px;padding:10px 12px;margin-bottom:8px}
+.opt:hover:not(:disabled){border-color:var(--pr)}
+.opt.sel{border-color:var(--pr);background:var(--ac)}
+.opt.ok{border-color:var(--ok);background:var(--okb)}
+.opt.bad{border-color:var(--no);background:var(--nob)}
+.btn{background:var(--pr);color:var(--prt);border:0;border-radius:10px;padding:10px 18px;font-weight:600;margin-top:6px}
+.btn:disabled{opacity:.45;cursor:default}
+.btn.alt{background:transparent;color:var(--pr);border:2px solid var(--pr)}
+input[type=text],textarea{width:100%;font:inherit;color:var(--tx);background:var(--bg);border:2px solid var(--bd);border-radius:10px;padding:10px}
+textarea{min-height:110px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.bd{display:inline-block;min-width:22px;text-align:center;border-radius:99px;background:var(--pr);color:var(--prt);font-size:.78rem;font-weight:700;margin-right:6px;padding:0 6px}
+.fb{margin-top:14px;padding:12px;border-radius:10px;border:1px solid var(--bd)}
+.fb.ok{background:var(--okb)}.fb.bad{background:var(--nob)}
+.fb b.t{display:block;margin-bottom:4px}
+.big{font-size:3rem;font-weight:800;color:var(--pr);margin:0;line-height:1.1}
+.w{border-top:1px solid var(--bd);padding:12px 0}
+.w small{color:var(--mu);display:block}
+.lb{display:block;font-weight:600;font-size:.9rem;margin:12px 0 4px}
+</style>
+</head>
+<body>
+<main>
+<h1>Kuis Bilangan Bulat</h1>
+<div class="sub">Matematika · MTs Kelas 7 · Semi-abstrak · Tingkat sulit · 20 soal</div>
+<div class="bar"><i id="pb"></i></div>
+<div id="app"></div>
+</main>
+<script>
+/* ============ DATA SOAL (guru dapat mengedit di sini) ============
+ Jenis: 
+ mc   {q,o:[pilihan],a:indeks benar,e:pembahasan}
+ mcx  {q,o:[pilihan],a:[indeks benar],e}
+ tf   {q,a:true/false,e}
+ match{q,l:[kiri],r:[kanan pasangan l urutan sama],e}  (kanan diacak otomatis)
+ sc   {q,a:[jawaban yang diterima],e}  isian singkat
+ es   {q,k:[[sinonim kata kunci 1],[kata kunci 2],...],min:jumlah kelompok yang harus ada,e}
+================================================================= */
+const Q=[
+{t:'mc',q:'Suhu di puncak gunung pukul 04.00 adalah −4°C. Satu jam kemudian turun 7°C, lalu pukul 07.00 naik 5°C. Berapa suhu pukul 07.00?',o:['−6°C','−16°C','6°C','−8°C'],a:0,e:'−4 − 7 = −11, kemudian −11 + 5 = −6. Suhunya −6°C.'},
+{t:'mc',q:'Hasil dari −12 + 25 − (−8) adalah ….',o:['21','5','29','−5'],a:0,e:'Mengurangi bilangan negatif = menambah lawannya. −12 + 25 = 13, lalu 13 + 8 = 21.'},
+{t:'mc',q:'Nilai dari (−6) × 4 ÷ (−3) + (−5) adalah ….',o:['3','−13','13','−3'],a:0,e:'(−6) × 4 = −24; −24 ÷ (−3) = 8; 8 + (−5) = 3.'},
+{t:'mc',q:'Seorang penyelam berada pada kedalaman −15 m. Ia naik 6 m, lalu turun 11 m. Posisinya sekarang adalah ….',o:['−20 m','−10 m','−32 m','−2 m'],a:0,e:'−15 + 6 = −9; −9 − 11 = −20. Jadi posisinya −20 m.'},
+{t:'mc',q:'Bilangan bulat yang terletak di antara −7 dan −2 serta lebih kecil dari −4 adalah ….',o:['−3','−5','−1','−8'],a:1,e:'Syaratnya −7 < x < −4. Hanya −5 yang memenuhi. −8 di luar batas bawah, −3 dan −1 lebih besar dari −4.'},
+{t:'mc',q:'Nilai x yang memenuhi 3x − 8 = −26 adalah ….',o:['−6','6','−18','−34/3'],a:0,e:'3x = −26 + 8 = −18, sehingga x = −18 ÷ 3 = −6.'},
+{t:'mcx',q:'Pilih SEMUA pernyataan yang benar.',o:['(−3) × (−5) = 15','−8 − (−8) = 0','(−20) ÷ 4 = 5','−2 > −10','−7 − 3 = −4'],a:[0,1,3],e:'(−20) ÷ 4 = −5 (bukan 5), dan −7 − 3 = −10 (bukan −4). Tiga pernyataan lainnya benar.'},
+{t:'mcx',q:'Pilih SEMUA operasi yang hasilnya bilangan negatif.',o:['(−4) × (−6)','7 − 15','(−18) ÷ (−3)','(−2) + (−9)','5 × (−1) × (−2)'],a:[1,3],e:'7 − 15 = −8 dan (−2) + (−9) = −11. Operasi lain menghasilkan 24, 6, dan 10 (positif).'},
+{t:'mcx',q:'Pilih SEMUA pasangan bilangan yang jumlahnya −5.',o:['−12 dan 7','9 dan −4','−2 dan −3','8 dan −13','−10 dan −5'],a:[0,2,3],e:'−12+7 = −5; −2+(−3) = −5; 8+(−13) = −5. Pasangan 9 dan −4 berjumlah 5, sedangkan −10 dan −5 berjumlah −15.'},
+{t:'tf',q:'Hasil pengurangan dua bilangan bulat selalu lebih kecil daripada bilangan yang dikurangi.',a:false,e:'Salah. Contoh penyangkal: 5 − (−3) = 8, yang lebih besar daripada 5.'},
+{t:'tf',q:'Hasil kali tiga bilangan bulat negatif adalah bilangan negatif.',a:true,e:'Benar. Dua negatif pertama menghasilkan positif, lalu positif × negatif = negatif.'},
+{t:'tf',q:'Jika a adalah bilangan bulat negatif, maka −a selalu bilangan bulat positif.',a:true,e:'Benar. Lawan dari bilangan negatif adalah bilangan positif, misalnya a = −4 maka −a = 4.'},
+{t:'match',q:'Ketuk satu item di kolom kiri, lalu ketuk pasangannya di kolom kanan.',l:['(−9) + 4','6 − (−3)','(−7) × (−2)','(−24) ÷ 6'],r:['−5','9','14','−4'],e:'(−9)+4 = −5; 6+3 = 9; (−7)×(−2) = 14; (−24)÷6 = −4.'},
+{t:'match',q:'Pasangkan situasi dengan bilangan bulat yang mewakilinya.',l:['Utang Rp25.000','Naik 8 lantai','40 m di bawah permukaan laut','Untung Rp15.000'],r:['−25.000','+8','−40','+15.000'],e:'Utang, penurunan, dan di bawah acuan (nol) diwakili bilangan negatif. Untung dan kenaikan diwakili bilangan positif.'},
+{t:'sc',q:'Hitunglah: −48 ÷ (−6) × (−2) + 10 = ….',a:['-6'],e:'Dikerjakan dari kiri: −48 ÷ (−6) = 8; 8 × (−2) = −16; −16 + 10 = −6.'},
+{t:'sc',q:'Suhu freezer −18°C dan suhu ruangan 27°C. Berapa derajat selisih suhunya? (tulis angkanya saja)',a:['45'],e:'Selisih = 27 − (−18) = 27 + 18 = 45°C.'},
+{t:'sc',q:'Hitunglah: −3 × (5 − 9) − 2 × (−4) = ….',a:['20'],e:'5 − 9 = −4; −3 × (−4) = 12; 2 × (−4) = −8; 12 − (−8) = 20.'},
+{t:'sc',q:'Dua bilangan bulat berurutan berjumlah −37. Berapa bilangan yang terkecil?',a:['-19'],e:'Misal n dan n+1: 2n + 1 = −37, maka n = −19. Bilangannya −19 dan −18.'},
+{t:'es',q:'Jelaskan mengapa hasil (−3) × (−4) adalah bilangan positif, bukan negatif.',k:[['negatif'],['positif','12'],['pola','lawan','berlawanan','kebalikan','dikali negatif','tanda']],min:2,e:'Contoh pola: (−3)×2 = −6, (−3)×1 = −3, (−3)×0 = 0, maka (−3)×(−1) = 3, ... (−3)×(−4) = 12. Mengalikan dengan negatif membalik tanda (lawan), jadi negatif × negatif = positif.'},
+{t:'es',q:'Andi menulis 5 − (−3) = 2 karena “5 − 3 = 2”. Jelaskan kesalahan Andi dan tuliskan hasil yang benar.',k:[['lawan','berlawanan','kebalikan','berubah','menjadi tambah','diubah','dijumlah'],['8','delapan'],['tambah','penjumlahan','+','jumlah']],min:2,e:'Mengurangi −3 sama dengan menambah lawannya, yaitu +3. Jadi 5 − (−3) = 5 + 3 = 8.'}
+];
+/* ================= MESIN KUIS ================= */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s).replace(/[&<>]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;'}[c]));
+const LBL={mc:'Pilihan ganda',mcx:'Pilihan ganda kompleks',tf:'Benar / Salah',match:'Menjodohkan',sc:'Isian singkat',es:'Uraian'};
+let i=0,score=0,wrong=[],done=false,st={},siswa=null;
+
+function start(){
+  $('#pb').style.width='0';
+  $('#app').innerHTML=`<div class="card"><p class="q">Isi data dirimu terlebih dahulu</p><label class="lb" for="fn">Nama lengkap</label><input type="text" id="fn" autocomplete="name" placeholder="Contoh: Siti Aisyah"><label class="lb" for="fs">NISN (10 digit)</label><input type="text" id="fs" inputmode="numeric" maxlength="10" placeholder="0123456789"><label class="lb" for="fk">Kelas</label><input type="text" id="fk" maxlength="10" placeholder="Contoh: 7A"><div id="er" style="color:var(--no);margin-top:8px"></div><button class="btn" id="mulai">Mulai kuis</button></div>`;
+  const go=()=>{const nama=$('#fn').value.trim(),nisn=$('#fs').value.trim(),kelas=$('#fk').value.trim();
+    if(nama.length<3)return $('#er').textContent='Nama lengkap wajib diisi.';
+    if(!/^\d{10}$/.test(nisn))return $('#er').textContent='NISN harus terdiri dari 10 angka.';
+    if(!kelas)return $('#er').textContent='Kelas wajib diisi.';
+    siswa={nama,nisn,kelas};i=0;score=0;wrong=[];render();window.scrollTo(0,0)};
+  $('#mulai').onclick=go;['fn','fs','fk'].forEach(id=>$('#'+id).onkeydown=e=>{if(e.key==='Enter')go()});
+  $('#fn').focus();
+}
+function shuffle(n){const a=[...Array(n).keys()];for(let k=n-1;k>0;k--){const j=Math.floor(Math.random()*(k+1));[a[k],a[j]]=[a[j],a[k]]}return a}
+function ansText(q){
+  if(q.t==='mc')return q.o[q.a];
+  if(q.t==='tf')return q.a?'Benar':'Salah';
+  if(q.t==='mcx')return q.a.map(k=>q.o[k]).join('; ');
+  if(q.t==='match')return q.l.map((x,k)=>x+' → '+q.r[k]).join('; ');
+  if(q.t==='sc')return q.a[0].replace('-','−');
+  return 'Kata kunci: '+q.k.map(g=>g[0]).join(', ');
+}
+function render(){
+  if(!siswa)return start();
+  if(i>=Q.length)return end();
+  done=false;const q=Q[i];st={sel:[],pairs:{},cur:null,ro:q.t==='match'?shuffle(q.r.length):null};
+  $('#pb').style.width=(i/Q.length*100)+'%';
+  let h=`<div class="card"><div class="meta"><span>Soal ${i+1} dari ${Q.length}</span><span class="tag">${LBL[q.t]}</span></div><p class="q">${q.q}</p><div id="body"></div><div id="fb"></div><div id="nx"></div></div>`;
+  $('#app').innerHTML=h;
+  const b=$('#body');
+  if(q.t==='mc'||q.t==='tf'){
+    const o=q.t==='tf'?['Benar','Salah']:q.o;
+    b.innerHTML=o.map((x,k)=>`<button class="opt" data-k="${k}">${x}</button>`).join('');
+    b.querySelectorAll('.opt').forEach(el=>el.onclick=()=>{if(done)return;const k=+el.dataset.k;const ak=q.t==='tf'?(q.a?0:1):q.a;mark([ak],[k]);finish(k===ak,o[k])});
+  }else if(q.t==='mcx'){
+    b.innerHTML=q.o.map((x,k)=>`<button class="opt" data-k="${k}">${x}</button>`).join('')+`<button class="btn" id="go">Periksa jawaban</button>`;
+    b.querySelectorAll('.opt').forEach(el=>el.onclick=()=>{if(done)return;const k=+el.dataset.k;const p=st.sel.indexOf(k);p<0?st.sel.push(k):st.sel.splice(p,1);el.classList.toggle('sel')});
+    $('#go').onclick=()=>{if(done)return;const s=[...st.sel].sort(),a=[...q.a].sort();mark(q.a,st.sel);finish(s.join()===a.join(),s.map(k=>q.o[k]).join('; ')||'(kosong)')};
+  }else if(q.t==='match'){drawMatch()}
+  else if(q.t==='sc'){
+    b.innerHTML=`<input type="text" id="in" placeholder="Ketik jawabanmu" autocomplete="off" inputmode="text"><button class="btn" id="go">Periksa</button>`;
+    const chk=()=>{if(done)return;const v=$('#in').value;const n=v.toLowerCase().replace(/[−–—]/g,'-').replace(/°?c$/,'').replace(/[\s.]/g,'');finish(q.a.includes(n),v||'(kosong)');$('#in').disabled=true};
+    $('#go').onclick=chk;$('#in').onkeydown=e=>{if(e.key==='Enter')chk()};$('#in').focus();
+  }else{
+    b.innerHTML=`<textarea id="in" placeholder="Tulis penjelasanmu dengan kalimat sendiri…"></textarea><button class="btn" id="go">Periksa</button>`;
+    $('#go').onclick=()=>{if(done)return;const v=$('#in').value;const t=v.toLowerCase().replace(/[−–—]/g,'-');const hit=q.k.filter(g=>g.some(w=>t.includes(w))).length;$('#in').disabled=true;finish(hit>=q.min&&t.length>15,v||'(kosong)',`Kata kunci terdeteksi: ${hit} dari ${q.k.length} kelompok.`)};
+  }
+}
+function mark(correct,chosen){
+  document.querySelectorAll('#body .opt').forEach(el=>{const k=+el.dataset.k;el.disabled=true;el.classList.remove('sel');
+    if(correct.includes(k))el.classList.add('ok');else if(chosen.includes(k))el.classList.add('bad')});
+  const g=$('#go');if(g)g.disabled=true;
+}
+function drawMatch(){
+  const q=Q[i],ro=st.ro,b=$('#body');
+  const nOf=li=>Object.keys(st.pairs).indexOf(String(li))+1;
+  const rn=rj=>{const li=Object.keys(st.pairs).find(l=>st.pairs[l]===rj);return li===undefined?0:nOf(li)};
+  b.innerHTML=`<div class="cols"><div>${q.l.map((x,k)=>`<button class="opt ${st.cur===k?'sel':''}" data-l="${k}">${st.pairs[k]!==undefined?`<span class="bd">${nOf(k)}</span>`:''}${x}</button>`).join('')}</div><div>${ro.map((rj)=>`<button class="opt" data-r="${rj}">${rn(rj)?`<span class="bd">${rn(rj)}</span>`:''}${q.r[rj]}</button>`).join('')}</div></div><button class="btn" id="go" ${Object.keys(st.pairs).length<q.l.length?'disabled':''}>Periksa jawaban</button>`;
+  b.querySelectorAll('[data-l]').forEach(el=>el.onclick=()=>{if(done)return;st.cur=+el.dataset.l;drawMatch()});
+  b.querySelectorAll('[data-r]').forEach(el=>el.onclick=()=>{if(done||st.cur===null)return;const rj=+el.dataset.r;for(const l in st.pairs)if(st.pairs[l]===rj)delete st.pairs[l];st.pairs[st.cur]=rj;st.cur=null;drawMatch()});
+  $('#go').onclick=()=>{if(done)return;const ok=q.l.every((_,k)=>st.pairs[k]===k);
+    b.querySelectorAll('[data-l]').forEach(el=>{const k=+el.dataset.l;el.disabled=true;el.classList.add(st.pairs[k]===k?'ok':'bad')});
+    b.querySelectorAll('[data-r]').forEach(el=>{const rj=+el.dataset.r;el.disabled=true;const li=Object.keys(st.pairs).find(l=>st.pairs[l]===rj);el.classList.add(li!==undefined&&+li===rj?'ok':'bad')});
+    $('#go').disabled=true;
+    finish(ok,q.l.map((x,k)=>q.r[st.pairs[k]]!==undefined?x+' → '+q.r[st.pairs[k]]:x+' → ?').join('; '))};
+}
+function finish(ok,user,extra){
+  done=true;const q=Q[i];if(ok)score++;else wrong.push({i,u:user});
+  $('#fb').innerHTML=`<div class="fb ${ok?'ok':'bad'}"><b class="t">${ok?'✔ Benar!':'✘ Belum tepat'}</b>${ok?'':`<div>Jawaban benar: <b>${ansText(q)}</b></div>`}${extra?`<div>${extra}</div>`:''}<div style="margin-top:6px"><b>Pembahasan:</b> ${q.e}</div></div>`;
+  $('#nx').innerHTML=`<button class="btn" id="next">${i+1<Q.length?'Soal berikutnya →':'Lihat hasil'}</button>`;
+  $('#next').onclick=()=>{i++;render();window.scrollTo(0,0)};
+  $('#next').focus();
+}
+function end(){
+  $('#pb').style.width='100%';
+  const p=Math.round(score/Q.length*100);
+  const msg=p>=85?'Luar biasa! Pemahamanmu sangat kuat.':p>=65?'Bagus! Pelajari lagi soal yang masih salah.':'Tetap semangat! Baca pembahasan lalu coba ulangi.';
+  let h=`<div class="card" style="text-align:center"><div class="sub"><b>${esc(siswa.nama)}</b> · NISN ${esc(siswa.nisn)} · Kelas ${esc(siswa.kelas)}</div><div class="sub">Skor akhir</div><p class="big">${p}</p><p>${score} benar dari ${Q.length} soal</p><p>${msg}</p><button class="btn" id="re">↻ Ulangi</button> <button class="btn alt" id="ns">Ganti siswa</button></div>`;
+  if(wrong.length){h+=`<div class="card" style="margin-top:14px"><h2 style="margin:0 0 4px;font-size:1.1rem">Soal yang salah (${wrong.length})</h2>`+wrong.map(w=>{const q=Q[w.i];return `<div class="w"><b>No. ${w.i+1}.</b> ${q.q}<small>Jawabanmu: ${esc(w.u)}</small><small>Jawaban benar: <b>${ansText(q)}</b></small><small>Pembahasan: ${q.e}</small></div>`}).join('')+`</div>`}
+  else h+=`<div class="card" style="margin-top:14px;text-align:center">🎉 Semua soal dijawab dengan benar!</div>`;
+  $('#app').innerHTML=h;$('#re').onclick=()=>{i=0;score=0;wrong=[];render();window.scrollTo(0,0)};
+  $('#ns').onclick=()=>{siswa=null;i=0;score=0;wrong=[];render();window.scrollTo(0,0)};
+  window.scrollTo(0,0);
+}
+render();
+</script>
+</body>
+</html>
